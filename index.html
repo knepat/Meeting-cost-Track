@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meeting Cost Tracker</title>
+<style>
+:root{--bg:#f3f5f8;--panel:#fff;--ink:#172033;--muted:#667085;--line:#e4e8ef;--blue:#2459d3;--blue2:#eaf0ff;--green:#16835f;--amber:#b7791f;--red:#c03945;--shadow:0 8px 28px rgba(22,34,57,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:650;transition:.15s}button:focus-visible,input:focus-visible{outline:3px solid #99b5ff;outline-offset:2px}
+.primary{background:var(--blue);color:#fff}.secondary{background:#eef1f6;color:var(--ink)}.danger{background:#fff0f0;color:var(--red)}.small{padding:7px 10px;font-size:13px}
+header{background:#101a2c;color:#fff;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{height:42px;width:42px;border-radius:12px;background:#294fba;display:grid;place-items:center;font-size:21px;font-weight:800}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:#aebbd1;font-size:13px}
+.status{display:flex;align-items:center;gap:8px;color:#dbe5f8;font-size:13px}.dot{height:8px;width:8px;border-radius:50%;background:#8b96a9}.dot.running{background:#35d39a;box-shadow:0 0 0 4px #35d39a22}.wrap{max-width:1200px;margin:0 auto;padding:24px}
+.hero{background:linear-gradient(125deg,#172947,#244b9d);color:white;border-radius:20px;padding:26px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:280px;height:280px;border:1px solid #ffffff18;border-radius:50%;right:-60px;top:-150px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06;pointer-events:none}.hero-top{display:flex;justify-content:space-between;gap:20px;align-items:start;flex-wrap:wrap;position:relative;z-index:1}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#c6d5f5;font-weight:750}.total{font-size:clamp(38px,6vw,60px);line-height:1.1;font-weight:800;letter-spacing:-.04em;margin:8px 0 6px;font-variant-numeric:tabular-nums}.hero-sub{color:#d0dbf1;font-size:14px}.controls{display:flex;gap:8px;flex-wrap:wrap}.hero .primary{background:#fff;color:#173775}.hero .secondary{background:#ffffff1b;color:white;border:1px solid #ffffff24}.hero .danger{background:#ffe9e9;color:#a62c37}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px;position:relative;z-index:1}.metric{background:#ffffff12;border:1px solid #ffffff1b;padding:14px;border-radius:13px}.metric span{display:block;color:#d0dbf1;font-size:12px;margin-bottom:5px}.metric strong{font-size:21px;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:18px;margin-top:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:var(--shadow);min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.panel h2{font-size:17px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:3px}.group-list{display:grid;gap:10px}.group{border:1px solid var(--line);border-radius:13px;padding:13px}.group-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.group-name{display:flex;align-items:center;gap:9px;font-weight:750}.swatch{height:10px;width:10px;border-radius:3px;flex:none}.pill{font-size:11px;background:#f0f3f8;color:#58657b;padding:4px 7px;border-radius:99px;font-weight:700}.group-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;border:1px solid #dce2eb;border-radius:9px;padding:9px 10px;color:var(--ink);background:#fff}.field input:disabled{background:#f4f6f9;color:#7a8495}.group-foot{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding-top:10px;border-top:1px solid #edf0f5;font-size:12px;color:var(--muted)}.group-foot strong{color:var(--ink);font-size:13px}.bar-list{display:grid;gap:14px}.bar-label{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:6px}.bar-label span:first-child{color:#4b566b}.bar-track{height:9px;background:#edf0f5;border-radius:99px;overflow:hidden}.bar-fill{height:100%;border-radius:99px;min-width:0;transition:width .25s}.summary-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #edf0f5;font-size:13px}.summary-row:last-child{border-bottom:0}.summary-row span{color:var(--muted)}.summary-row strong{font-variant-numeric:tabular-nums}.hint{padding:12px 13px;border-radius:11px;background:#f5f7fb;color:#59657a;font-size:12px;margin-top:15px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.history{max-height:250px;overflow:auto}.event{padding:10px 0;border-bottom:1px solid #edf0f5;display:flex;justify-content:space-between;gap:10px;font-size:12px}.event:last-child{border:0}.event strong{display:block;font-size:13px}.event span{color:var(--muted)}.empty{font-size:13px;color:var(--muted);padding:10px 0}.footer{color:var(--muted);font-size:11px;text-align:center;padding:20px}
+details summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}details summary::-webkit-details-marker{display:none}details summary:after{content:"＋";font-size:20px;color:var(--muted)}details[open] summary:after{content:"−"}.settings-body{margin-top:16px}.settings-note{font-size:12px;color:var(--muted);margin:0 0 14px}.setting-row{display:grid;grid-template-columns:1fr minmax(130px,200px);gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f5}.setting-row:last-child{border:0}.setting-row label{font-size:13px;font-weight:650}.setting-row small{display:block;color:var(--muted);font-weight:400;margin-top:2px}.setting-row input{width:100%;border:1px solid #dce2eb;border-radius:9px;padding:9px}.setting-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:800px){.wrap{padding:14px}.grid,.bottom{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:20px}.panel{padding:16px}}@media(max-width:430px){header{padding:15px}.controls button{flex:1}.metric strong{font-size:18px}.group-fields{grid-template-columns:1fr 1fr}.total{font-size:39px}}
+@media print{body{background:#fff}.controls,header .status,details,.footer{display:none!important}.wrap{max-width:none;padding:0}.hero{background:#fff;color:#111;border:1px solid #ccc;box-shadow:none}.hero .eyebrow,.hero-sub,.metric span{color:#555}.metric{background:#fff;border:1px solid #ddd}.metric strong{color:#111}.panel{box-shadow:none;break-inside:avoid}.grid,.bottom{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">€</div><div><h1>Meeting Cost Tracker</h1><p>Personalkosten live im Blick</p></div></div>
+  <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Bereit für das Meeting</span></div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <div class="hero-top">
+      <div><div class="eyebrow">Kumulierte Meetingkosten</div><div class="total" id="totalCost">0,00 €</div><div class="hero-sub" id="heroSub">Starte den Timer, um die Kosten zu erfassen.</div></div>
+      <div class="controls">
+        <button class="primary" id="startBtn">▶ Starten</button>
+        <button class="secondary" id="pauseBtn" disabled>Ⅱ Pause</button>
+        <button class="secondary" id="endBtn" disabled>■ Beenden</button>
+        <button class="danger" id="resetBtn">↻ Reset</button>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span>Meetingdauer</span><strong id="duration">00:00:00</strong></div>
+      <div class="metric"><span>Teilnehmer aktuell</span><strong id="totalPeople">12</strong></div>
+      <div class="metric"><span>Kosten pro Minute</span><strong id="perMinute">0,00 €</strong></div>
+      <div class="metric"><span>Kosten pro Stunde</span><strong id="perHour">0,00 €</strong></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Teilnehmer & Kostensätze</h2><div class="sub">Änderungen gelten ab dem Änderungszeitpunkt.</div></div><button class="secondary small" id="equalBtn" title="Demo-Verteilung einsetzen">Demo-Werte</button></div>
+      <div id="groups" class="group-list"></div>
+      <div class="hint">Tipp: Passe die Teilnehmerzahl oder Stundensätze auch während des Meetings an. Die bereits entstandenen Kosten bleiben erhalten.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2>Kostenverteilung</h2><div class="sub">Anteil je Mitarbeitergruppe</div></div></div>
+      <div id="bars" class="bar-list"></div>
+      <div style="margin-top:18px">
+        <div class="summary-row"><span>Gesamtkosten bisher</span><strong id="summaryTotal">0,00 €</strong></div>
+        <div class="summary-row"><span>Ø Kosten pro Teilnehmer</span><strong id="perPerson">0,00 €</strong></div>
+        <div class="summary-row"><span>Aktuelle Besetzung / Stunde</span><strong id="currentHourly">0,00 €</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Meeting-Verlauf</h2><div class="sub">Status- und Teilnehmeränderungen</div></div><button class="secondary small" id="csvBtn">CSV exportieren</button></div>
+      <div id="history" class="history"><div class="empty">Noch keine Ereignisse. Starte ein Meeting.</div></div>
+    </div>
+    <div class="panel">
+      <details id="settings">
+        <summary>Einstellungen & Kostenbausteine</summary>
+        <div class="settings-body">
+          <p class="settings-note">Lege fest, ob die Gruppensätze vollständige Arbeitgeberkosten enthalten oder aus Basiswert plus Aufschlägen berechnet werden. Änderungen gelten ab sofort, nicht rückwirkend.</p>
+          <div class="setting-row"><label for="rateMode">Berechnungsmodus<small>Einfacher Vollkostensatz oder Basiswert mit Aufschlägen</small></label><select id="rateMode"><option value="full">Vollkostensatz pro Stunde</option><option value="base">Basiswert + Aufschläge</option></select></div>
+          <div id="surchargeFields" hidden>
+            <div class="setting-row"><label for="employerPct">Arbeitgeberkosten (%)<small>Zusätzlich zum Basiswert</small></label><input id="employerPct" type="number" min="0" max="500" step="0.1" value="25"></div>
+            <div class="setting-row"><label for="overheadPct">Gemeinkosten / Overhead (%)<small>Aufschlag auf Basiswert</small></label><input id="overheadPct" type="number" min="0" max="500" step="0.1" value="15"></div>
+          </div>
+          <div class="setting-row"><label for="meetingName">Meeting-Titel<small>Optional für den Export</small></label><input id="meetingName" type="text" maxlength="100" placeholder="z. B. Projektstatus"></div>
+          <div class="setting-row"><label for="plannedMinutes">Geplante Dauer (Minuten)<small>Optionales Zeitbudget</small></label><input id="plannedMinutes" type="number" min="0" step="5" placeholder="z. B. 60"></div>
+          <div class="setting-actions"><button class="primary" id="saveSettings">Einstellungen übernehmen</button><button class="secondary" id="resetSettings">Auf Standard zurücksetzen</button></div>
+          <div class="hint">Die Kürzel MK, OmK und TmK werden unverändert verwendet. Alle Werte bleiben lokal in diesem Browser, sofern du sie nicht exportierst.</div>
+        </div>
+      </details>
+      <div style="margin-top:16px" id="budgetWrap" hidden>
+        <div class="panel-head"><div><h2>Zeitbudget</h2><div class="sub" id="budgetText"></div></div></div>
+        <div class="bar-track"><div class="bar-fill" id="budgetBar" style="background:var(--blue);width:0%"></div></div>
+      </div>
+      <div class="hint" style="margin-top:15px">Alle Kostensätze sind Demo-Werte. Bitte vor einer realen Nutzung durch eure internen Vollkostensätze ersetzen.</div>
+    </div>
+  </section>
+  <div class="footer">Meeting Cost Tracker · Lokale Browser-App · Keine Datenübertragung</div>
+</main>
+<script>
+(() => {
+  const DEFAULTS = [
+    {id:'tarif',name:'Tarifliche Mitarbeiter',count:8,rate:65,color:'#3c73d9'},
+    {id:'mk',name:'MK',count:1,rate:110,color:'#d69b31'},
+    {id:'omk',name:'OmK',count:1,rate:135,color:'#d56c78'},
+    {id:'tmk',name:'TmK',count:1,rate:165,color:'#8a72d6'},
+    {id:'vorstand',name:'Vorstand',count:1,rate:300,color:'#269b83'}
+  ];
+  const $ = id => document.getElementById(id);
+  const money = n => new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number.isFinite(n)?n:0);
+  const num = n => new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(Number.isFinite(n)?n:0);
+  const durationText = seconds => {
+    seconds = Math.max(0,Math.floor(seconds));
+    const h=String(Math.floor(seconds/3600)).padStart(2,'0');
+    const m=String(Math.floor(seconds%3600/60)).padStart(2,'0');
+    const s=String(seconds%60).padStart(2,'0');
+    return `${h}:${m}:${s}`;
+  };
+  const now = () => Date.now();
+  let groups = DEFAULTS.map(x=>({...x}));
+  let state='ready', startedAt=null, lastResumeAt=null, accumulatedSeconds=0, segmentStart=null;
+  let currentSegment=null, segments=[], events=[], meetingStart=null, meetingEnd=null;
+  let rateMode='full', employerPct=25, overheadPct=15, meetingName='', plannedMinutes='';
+  let renderTick=null;
+
+  function effectiveRate(g) {
+    if(rateMode==='base') return g.rate * (1 + Math.max(0,employerPct)/100 + Math.max(0,overheadPct)/100);
+    return g.rate;
+  }
+  function peopleTotal(list=groups){return list.reduce((s,g)=>s+g.count,0)}
+  function hourlyTotal(list=groups){return list.reduce((s,g)=>s+g.count*effectiveRate(g),0)}
+  function elapsedSeconds(at=now()) {
+    return accumulatedSeconds + (state==='running' && lastResumeAt!==null ? (at-lastResumeAt)/1000 : 0);
+  }
+  function closeSegment(at) {
+    if(state==='running' && currentSegment && segmentStart!==null && at>segmentStart) {
+      segments.push({start:segmentStart,end:at,people:currentSegment.people.map(x=>({...x})),rates:currentSegment.rates.map(x=>({...x})),rateMode:currentSegment.rateMode,employerPct:currentSegment.employerPct,overheadPct:currentSegment.overheadPct});
+    }
+    segmentStart=null; currentSegment=null;
+  }
+  function snapshot() {
+    return {people:groups.map(g=>({id:g.id,name:g.name,count:g.count})),rates:groups.map(g=>({id:g.id,rate:effectiveRate(g)})),rateMode,employerPct,overheadPct};
+  }
+  function record(type,detail='') {
+    events.unshift({at:now(),type,detail,elapsed:elapsedSeconds()});
+    renderHistory();
+  }
+  function segmentCost(seg) {
+    const seconds=(seg.end-seg.start)/1000;
+    return seg.people.reduce((sum,p)=>{
+      const r=seg.rates.find(x=>x.id===p.id)?.rate||0;
+      return sum + seconds/3600*p.count*r;
+    },0);
+  }
+  function totalCost(at=now()) {
+    let total=segments.reduce((s,seg)=>s+segmentCost(seg),0);
+    if(state==='running' && currentSegment && segmentStart!==null && at>segmentStart) {
+      const seg={start:segmentStart,end:at,people:currentSegment.people,rates:currentSegment.rates};
+      total+=segmentCost(seg);
+    }
+    return total;
+  }
+  function changeLiveSegment() {
+    if(state==='running') {
+      const t=now(); closeSegment(t); segmentStart=t; currentSegment=snapshot();
+    }
+  }
+  function addEventAndRefresh(label,detail) {record(label,detail);renderAll()}
+  function renderGroups() {
+    $('groups').innerHTML=groups.map(g=>`
+      <div class="group" data-group="${g.id}">
+        <div class="group-top"><div class="group-name"><span class="swatch" style="background:${g.color}"></span>${g.name}</div><span class="pill" id="pill-${g.id}">${g.count} Pers.</span></div>
+        <div class="group-fields">
+          <div class="field"><label for="count-${g.id}">Teilnehmerzahl</label><input id="count-${g.id}" aria-label="Teilnehmerzahl ${g.name}" type="number" min="0" max="10000" step="1" value="${g.count}"></div>
+          <div class="field"><label for="rate-${g.id}">${rateMode==='base'?'Basiswert':'Vollkostensatz'} €/h</label><input id="rate-${g.id}" aria-label="Stundensatz ${g.name}" type="number" min="0" max="1000000" step="0.5" value="${g.rate}"></div>
+        </div>
+        <div class="group-foot"><span>Effektiver Satz: <strong id="effective-${g.id}">${money(effectiveRate(g))}/h</strong></span><span>Kosten bisher: <strong id="cost-${g.id}">${money(0)}</strong></span></div>
+      </div>`).join('');
+    groups.forEach(g=>{
+      $(`count-${g.id}`).addEventListener('change',e=>{
+        const value=Number(e.target.value);
+        if(!Number.isInteger(value)||value<0||value>10000){e.target.value=g.count;return}
+        if(value===g.count)return;
+        changeLiveSegment();
+        const old=g.count;g.count=value;
+        if(state==='running'){currentSegment=snapshot()}
+        addEventAndRefresh('Teilnehmer geändert',`${g.name}: ${old} → ${value}`);
+      });
+      $(`rate-${g.id}`).addEventListener('change',e=>{
+        const value=Number(e.target.value);
+        if(!Number.isFinite(value)||value<0||value>1000000){e.target.value=g.rate;return}
+        if(value===g.rate)return;
+        changeLiveSegment();
+        const old=g.rate;g.rate=value;
+        if(state==='running'){currentSegment=snapshot()}
+        addEventAndRefresh('Kostensatz geändert',`${g.name}: ${money(old)} → ${money(value)}${rateMode==='base'?' Basiswert/h':'/h'}`);
+      });
+    });
+  }
+  function renderHistory() {
+    const box=$('history');
+    if(!events.length){box.innerHTML='<div class="empty">Noch keine Ereignisse. Starte ein Meeting.</div>';return}
+    box.innerHTML=events.map(ev=>`<div class="event"><div><strong>${escapeHtml(ev.type)}</strong><span>${escapeHtml(ev.detail||'')}</span></div><div style="text-align:right;white-space:nowrap"><strong>${new Date(ev.at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</strong><span>${durationText(ev.elapsed)}</span></div></div>`).join('');
+  }
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function costsByGroup(at=now()) {
+    const result={};groups.forEach(g=>result[g.id]=0);
+    segments.forEach(seg=>{
+      const seconds=(seg.end-seg.start)/1000;
+      seg.people.forEach(p=>{const rate=seg.rates.find(x=>x.id===p.id)?.rate||0;result[p.id]=(result[p.id]||0)+seconds/3600*p.count*rate});
+    });
+    if(state==='running'&&currentSegment&&segmentStart!==null&&at>segmentStart){
+      const seconds=(at-segmentStart)/1000;
+      currentSegment.people.forEach(p=>{const rate=currentSegment.rates.find(x=>x.id===p.id)?.rate||0;result[p.id]=(result[p.id]||0)+seconds/3600*p.count*rate});
+    }
+    return result;
+  }
+  function renderAll() {
+    const t=now(), elapsed=elapsedSeconds(t), cost=totalCost(t), hr=hourlyTotal(), by=costsByGroup(t);
+    $('totalCost').textContent=money(cost);
+    $('duration').textContent=durationText(elapsed);
+    $('totalPeople').textContent=peopleTotal();
+    $('perMinute').textContent=money(hr/60);
+    $('perHour').textContent=money(hr);
+    $('summaryTotal').textContent=money(cost);
+    $('perPerson').textContent=peopleTotal()?money(cost/peopleTotal()):money(0);
+    $('currentHourly').textContent=money(hr);
+    groups.forEach(g=>{
+      const p=$(`pill-${g.id}`), eff=$(`effective-${g.id}`), c=$(`cost-${g.id}`);
+      if(p)p.textContent=`${g.count} Pers.`;
+      if(eff)eff.textContent=`${money(effectiveRate(g))}/h`;
+      if(c)c.textContent=money(by[g.id]||0);
+    });
+    const max=Math.max(0,...groups.map(g=>by[g.id]||0));
+    $('bars').innerHTML=groups.map(g=>{
+      const amount=by[g.id]||0, pct=cost>0?amount/cost*100:0;
+      return `<div><div class="bar-label"><span><span class="swatch" style="display:inline-block;margin-right:7px;background:${g.color}"></span>${g.name} (${g.count})</span><strong>${money(amount)} · ${num(pct)}%</strong></div><div class="bar-track"><div class="bar-fill" style="width:${cost>0?pct:0}%;background:${g.color}"></div></div></div>`;
+    }).join('');
+    const statusMap={ready:['Bereit für das Meeting',''],running:['Meeting läuft','running'],paused:['Meeting pausiert',''],ended:['Meeting beendet','']};
+    $('statusText').textContent=statusMap[state][0];$('statusDot').className='dot '+statusMap[state][1];
+    $('startBtn').disabled=state==='running'||state==='ended';
+    $('startBtn').textContent=state==='paused'?'▶ Fortsetzen':'▶ Starten';
+    $('pauseBtn').disabled=state!=='running';$('endBtn').disabled=state!=='running'&&state!=='paused';
+    $('pauseBtn').textContent=state==='paused'?'Ⅱ Pausiert':'Ⅱ Pause';
+    $('heroSub').textContent=state==='running'?`Laufende Besetzung kostet ${money(hr/60)} pro Minute.`:state==='paused'?'Die Zeit- und Kostenmessung ist angehalten.':state==='ended'?'Abschlussübersicht – Kosten sind final.':'Demo-Kostensätze aktiv · Passe Gruppen und Sätze nach Bedarf an.';
+    const planned=Number(plannedMinutes);
+    $('budgetWrap').hidden=!(planned>0);
+    if(planned>0){const pct=Math.min(100,elapsed/(planned*60)*100);$('budgetText').textContent=`${durationText(elapsed)} von ${durationText(planned*60)} (${num(pct)}%)`;$('budgetBar').style.width=pct+'%';$('budgetBar').style.background=pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--blue)'}
+    $('csvBtn').disabled=!events.length&&!segments.length&&state==='ready';
+  }
+  function start() {
+    if(state==='running'||state==='ended')return;
+    const t=now();
+    if(state==='ready'){meetingStart=t;accumulatedSeconds=0;segments=[];events=[];meetingEnd=null;record('Meeting gestartet',meetingName||'');}
+    else record('Meeting fortgesetzt','');
+    state='running';lastResumeAt=t;segmentStart=t;currentSegment=snapshot();renderAll();
+  }
+  function pause() {
+    if(state!=='running')return;
+    const t=now();closeSegment(t);accumulatedSeconds+=(t-lastResumeAt)/1000;lastResumeAt=null;state='paused';record('Meeting pausiert','');renderAll();
+  }
+  function end() {
+    if(state!=='running'&&state!=='paused')return;
+    if(state==='running'){const t=now();closeSegment(t);accumulatedSeconds+=(t-lastResumeAt)/1000;lastResumeAt=null;}
+    state='ended';meetingEnd=now();record('Meeting beendet',`Gesamtkosten: ${money(totalCost())}`);renderAll();
+  }
+  function reset() {
+    if((state==='running'||state==='paused')&&!confirm('Meeting wirklich zurücksetzen? Die bisherige Historie dieses Meetings wird gelöscht.'))return;
+    state='ready';startedAt=null;lastResumeAt=null;accumulatedSeconds=0;segmentStart=null;currentSegment=null;segments=[];events=[];meetingStart=null;meetingEnd=null;
+    record('Bereit für neues Meeting','');renderAll();
+  }
+  function applySettings() {
+    const newMode=$('rateMode').value, ep=Number($('employerPct').value), op=Number($('overheadPct').value);
+    if(!Number.isFinite(ep)||ep<0||ep>500||!Number.isFinite(op)||op<0||op>500){alert('Bitte gültige Aufschläge zwischen 0 und 500 % eingeben.');return}
+    changeLiveSegment();
+    rateMode=newMode;employerPct=ep;overheadPct=op;meetingName=$('meetingName').value.trim();plannedMinutes=$('plannedMinutes').value;
+    if(state==='running')currentSegment=snapshot();
+    $('surchargeFields').hidden=rateMode!=='base';
+    try{localStorage.setItem('mct-settings',JSON.stringify({rateMode,employerPct,overheadPct,meetingName,plannedMinutes,groups:groups.map(({id,name,count,rate,color})=>({id,name,count,rate,color}))}))}catch(e){}
+    record('Einstellungen geändert',rateMode==='base'?'Basiswerte mit Aufschlägen':'Vollkostensätze');
+    renderAll();
+  }
+  function loadSettings() {
+    try {
+      const saved=JSON.parse(localStorage.getItem('mct-settings')||'null');
+      if(saved){
+        if(Array.isArray(saved.groups)&&saved.groups.length===5)groups=DEFAULTS.map(d=>{const s=saved.groups.find(x=>x.id===d.id);return s?{...d,count:validInt(s.count,d.count),rate:validNum(s.rate,d.rate)}:({...d})});
+        rateMode=saved.rateMode==='base'?'base':'full';employerPct=validNum(saved.employerPct,25);overheadPct=validNum(saved.overheadPct,15);meetingName=String(saved.meetingName||'');plannedMinutes=saved.plannedMinutes||'';
+      }
+    }catch(e){}
+    $('rateMode').value=rateMode;$('employerPct').value=employerPct;$('overheadPct').value=overheadPct;$('meetingName').value=meetingName;$('plannedMinutes').value=plannedMinutes;$('surchargeFields').hidden=rateMode!=='base';
+  }
+  function validInt(x,fallback){return Number.isInteger(Number(x))&&Number(x)>=0?Number(x):fallback}
+  function validNum(x,fallback){return Number.isFinite(Number(x))&&Number(x)>=0?Number(x):fallback}
+  function resetSettings() {
+    if(!confirm('Kostensätze und Einstellungen auf die Demo-Standards zurücksetzen?'))return;
+    changeLiveSegment();groups=DEFAULTS.map(x=>({...x}));rateMode='full';employerPct=25;overheadPct=15;meetingName='';plannedMinutes='';
+    $('rateMode').value=rateMode;$('employerPct').value=employerPct;$('overheadPct').value=overheadPct;$('meetingName').value='';$('plannedMinutes').value='';$('surchargeFields').hidden=true;
+    if(state==='running')currentSegment=snapshot();
+    renderGroups();record('Einstellungen zurückgesetzt','Demo-Werte geladen');renderAll();
+    try{localStorage.removeItem('mct-settings')}catch(e){}
+  }
+  function exportCsv() {
+    const rows=[['Meeting Cost Tracker'],['Meeting',meetingName],['Status',state],['Start',meetingStart?new Date(meetingStart).toLocaleString('de-DE'):''],['Ende',meetingEnd?new Date(meetingEnd).toLocaleString('de-DE'):''],['Dauer (Sekunden)',Math.round(elapsedSeconds())],['Gesamtkosten (EUR)',totalCost().toFixed(2)],[],['Gruppe','Teilnehmer aktuell','Kostensatz effektiv EUR/h','Kosten EUR']];
+    const by=costsByGroup();
+    groups.forEach(g=>rows.push([g.name,g.count,effectiveRate(g).toFixed(2),(by[g.id]||0).toFixed(2)]));
+    rows.push([],['Zeitstempel','Ereignis','Details','Meetingzeit Sekunden']);
+    events.slice().reverse().forEach(e=>rows.push([new Date(e.at).toLocaleString('de-DE'),e.type,e.detail,Math.round(e.elapsed)]));
+    const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='meeting-cost-tracker.csv';a.click();URL.revokeObjectURL(url);
+  }
+  $('startBtn').addEventListener('click',start);$('pauseBtn').addEventListener('click',()=>state==='paused'?start():pause());$('endBtn').addEventListener('click',end);$('resetBtn').addEventListener('click',reset);
+  $('saveSettings').addEventListener('click',applySettings);$('resetSettings').addEventListener('click',resetSettings);$('csvBtn').addEventListener('click',exportCsv);
+  $('rateMode').addEventListener('change',()=>{$('surchargeFields').hidden=$('rateMode').value!=='base'});
+  $('equalBtn').addEventListener('click',()=>{
+    if(state==='running')changeLiveSegment();
+    groups.forEach(g=>{const d=DEFAULTS.find(x=>x.id===g.id);g.count=d.count;g.rate=d.rate});
+    if(state==='running')currentSegment=snapshot();
+    renderGroups();record('Demo-Werte geladen','Teilnehmerverteilung und Sätze zurückgesetzt');renderAll();
+  });
+  loadSettings();renderGroups();renderAll();renderHistory();
+  renderTick=setInterval(renderAll,250);
+})();
+</script>
+</body>
+</html>
